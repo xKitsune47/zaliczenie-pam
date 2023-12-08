@@ -1,0 +1,17 @@
+WISIELEC
+done    - biblioteka generujaca losowe slowa po angielsku: word_generator
+done    - stworzyc liste w ktorej generuje randomNoun i randomVerb po czym losowe wybranie slowa z listy, po zakonczonej grze
+done      czysci liste ze wszystkich slow i generuje nowe
+done    - menu startu, czyli: zacznij gre
+done    - menu wyboru po zakonczeniu gry zalezne od outcome'u gry, czyli: zacznij gre od nowa, powrot do menu glownego
+done    - po zakonczeniu gry pokazuje wynik
+done    - wisielec ale bez grafiki, wynik odejmuje od liczby zyc X, ktora jak dojdzie do zera to przegrana, czyli im wyzszy wynik
+done      tym lepiej
+done    - tekstu outcome'u gry: wygrana, zwyciestwo, sukces, przegrana, porazka, niepowodzenie
+done    - projekty ekranow pogladowe: paint, pliki zapisane w folderze todo
+done    - projekty ekranow "profesjonalne": figma
+done    - na niezgadnietych literach sa underscore'y (_), na zgadnietych sa litery bez underscore'ow
+done    - dodac ekran przegranej (bo jeszcze go kurła nie ma)
+done    - pierwsza litera konca gry ma miec kolor pomaranczowy a reszta czarny
+    - dokonczyc stylowanie aplikacji
+done    - dodanie smooth przejsc pomiedzy ekranami aplikacji
