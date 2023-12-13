@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:english_words/english_words.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kumi_popup_window/kumi_popup_window.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+//screen import
+import 'home_button.dart';
+import 'how_to_play_button.dart';
+import 'play_again_button.dart';
+import 'screen_lost.dart';
 
 var concatenate = StringBuffer();
 var colorFirstLetter = Color.fromARGB(255, 254, 93, 38);
@@ -30,12 +36,12 @@ class MyApp extends StatelessWidget {
           colorScheme:
               ColorScheme.fromSeed(seedColor: Color.fromARGB(0, 49, 169, 131)),
           textTheme: GoogleFonts.josefinSansTextTheme(),
-          //scaffoldBackgroundColor: Color.fromARGB(255, 255, 255, 255),
+          scaffoldBackgroundColor: Color.fromARGB(255, 255, 255, 255),
           elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 254, 93, 38),
                   foregroundColor: Colors.black,
-                  fixedSize: Size(150, 30),
+                  //fixedSize: Size(150, 30),
                   textStyle: TextStyle(
                     fontWeight: weightOfFont,
                   ))),
@@ -257,9 +263,9 @@ class _GameScreenStateful extends State<GameScreenStateful> {
                         }
                       }
                       if (completionCheckList2.join('') == word) {
-                        int score = lives - wrongLetters.length;
-                        if (score > appState.hiScores) {
-                          appState.hiScores = score;
+                        int scoreGame = lives - wrongLetters.length;
+                        if (scoreGame > appState.hiScores) {
+                          appState.hiScores = scoreGame;
                         }
                         Navigator.push(
                             context,
@@ -372,7 +378,7 @@ class _GameScreenStateful extends State<GameScreenStateful> {
           height: 300,
         );
       default:
-        print('tu cie mam');
+        null;
     }
     return SizedBox(
       height: 0,
@@ -445,140 +451,33 @@ class MainScreen extends StatelessWidget {
   }
 }
 
-class HowToPlayButton extends StatelessWidget {
-  const HowToPlayButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        child: const Icon(Icons.question_mark_rounded),
-        onPressed: () {
-          showPopupWindow(
-            context,
-            gravity: KumiPopupGravity.center,
-            bgColor: Colors.grey.withOpacity(0.5),
-            clickOutDismiss: true,
-            clickBackDismiss: true,
-            customAnimation: false,
-            customPop: false,
-            customPage: false,
-            underStatusBar: false,
-            underAppBar: true,
-            offsetX: 0,
-            offsetY: 0,
-            duration: Duration(milliseconds: 200),
-            onShowStart: (pop) {
-              print("showStart");
-            },
-            onShowFinish: (pop) {
-              print("showFinish");
-            },
-            onDismissStart: (pop) {
-              print("dismissStart");
-            },
-            onDismissFinish: (pop) {
-              print("dismissFinish");
-            },
-            onClickOut: (pop) {
-              print("onClickOut");
-            },
-            onClickBack: (pop) {
-              print("onClickBack");
-            },
-            childFun: (pop) {
-              return Container(
-                key: GlobalKey(),
-                padding: EdgeInsets.all(10),
-                height: 250,
-                width: 200,
-                color: Color.fromARGB(255, 254, 93, 38),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Text(
-                          'W tej grze chodzi o zgadnięcie wszystkich liter w wylosowanym po angielsku słowie. Masz na to maksymalnie 20 prób.'),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Text('Powodzenia!'),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
-
-class ScreenLost extends StatelessWidget {
-  ScreenLost({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<StateOfApp>();
-    List wordsLost = ['PRZEGRANA', 'PORAŻKA', 'NIEPOWODZENIE'];
-    int wordsLostInt = Random().nextInt(3);
-    var wordLost = wordsLost[wordsLostInt];
-    List wordLostList = wordLost.split('');
-    var firstLetter = wordLostList.first.toString();
-    wordLostList.removeAt(0);
-    var restOfWord = wordLostList.join('').toString();
-
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            Text.rich(TextSpan(children: [
-              TextSpan(
-                  text: firstLetter,
-                  style: TextStyle(
-                    color: colorFirstLetter,
-                    fontWeight: weightOfFont,
-                    fontSize: 36,
-                  )),
-              TextSpan(
-                  text: restOfWord,
-                  style: TextStyle(
-                    fontWeight: weightOfFont,
-                    fontSize: 36,
-                  )),
-            ])),
-            Text(
-              ':(',
-              style: TextStyle(
-                fontWeight: weightOfFont,
-                fontSize: 36,
-              ),
-            ),
-            SizedBox(
-              height: 50,
-            ),
-            Image.asset('assets/resized-depression-sad.gif'),
-            SizedBox(
-              height: 50,
-            ),
-            PlayAgainButton(appState: appState),
-            HomeButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ScreenWon extends StatelessWidget {
+class ScreenWon extends StatefulWidget {
   ScreenWon({super.key});
+
+  @override
+  State<ScreenWon> createState() => _ScreenWonState();
+}
+
+class _ScreenWonState extends State<ScreenWon> {
+  int? readScore;
+
+  @override
+  void initState() {
+    super.initState();
+    loadScore('hiScore');
+  }
+
+  void saveScore(String key, int value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(key, value);
+  }
+
+  Future<void> loadScore(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      readScore = prefs.getInt(key) ?? 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -586,11 +485,19 @@ class ScreenWon extends StatelessWidget {
     List wordsWon = ['WYGRANA', 'ZWYCIĘSTWO', 'SUKCES'];
     int wordsWonInt = Random().nextInt(3);
     var wordWon = wordsWon[wordsWonInt];
-    var score = lives - appState.wrongLetters.length;
+    var scoreEnd = lives - appState.wrongLetters.length;
     List wordWonList = wordWon.split('');
     var firstLetter = wordWonList.first.toString();
     wordWonList.removeAt(0);
     var restOfWord = wordWonList.join('').toString();
+    try {
+      if (scoreEnd > readScore!) {
+        saveScore('hiScore', (lives - appState.wrongLetters.length));
+        print(scoreEnd);
+      }
+    } on TypeError {
+      print('typeerror');
+    }
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -615,13 +522,14 @@ class ScreenWon extends StatelessWidget {
             ])),
             Text('WYNIK TO:'),
             Text(
-              score.toString(),
+              scoreEnd.toString(),
               style: TextStyle(
                 fontWeight: weightOfFont,
                 fontSize: 36,
               ),
             ),
-            Text('Najwyższy wynik: ${appState.hiScores}'),
+            Text('Najwyższy wynik:'),
+            Text('$readScore'),
             SizedBox(
               height: 350,
             ),
@@ -630,53 +538,6 @@ class ScreenWon extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class PlayAgainButton extends StatelessWidget {
-  const PlayAgainButton({
-    super.key,
-    required this.appState,
-  });
-
-  final StateOfApp appState;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        child: const Icon(Icons.replay_rounded),
-        onPressed: () {
-          appState.wordGeneration();
-          Navigator.push(
-              context,
-              PageTransition(
-                  child: GameScreenStateful(), type: PageTransitionType.fade));
-        },
-      ),
-    );
-  }
-}
-
-class HomeButton extends StatelessWidget {
-  const HomeButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(0),
-      child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                PageTransition(
-                    child: MainScreen(), type: PageTransitionType.fade));
-          },
-          child: Icon(Icons.home_outlined)),
     );
   }
 }
