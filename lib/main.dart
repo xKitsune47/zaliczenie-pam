@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
           colorScheme:
               ColorScheme.fromSeed(seedColor: Color.fromARGB(0, 49, 169, 131)),
           textTheme: GoogleFonts.josefinSansTextTheme(),
+          //scaffoldBackgroundColor: Color.fromARGB(255, 255, 255, 255),
           elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 254, 93, 38),
@@ -81,7 +82,6 @@ class GameScreenStateful extends StatefulWidget {
 }
 
 class _GameScreenStateful extends State<GameScreenStateful> {
-  var selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
@@ -94,6 +94,8 @@ class _GameScreenStateful extends State<GameScreenStateful> {
     var resultList = appState.resultList;
     var lettersChosenEarlier = appState.lettersChosenEarlier;
     List wrongLetters = appState.wrongLetters;
+    int livesLeft = lives - wrongLetters.length;
+
     if ((resultList.length + 1) <= wordSplit.length) {
       for (var i = 0; i < wordSplit.length; i++) {
         resultList.add(' _ ');
@@ -134,7 +136,7 @@ class _GameScreenStateful extends State<GameScreenStateful> {
             ])),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 0, bottom: 100),
+            padding: const EdgeInsets.all(5),
             child: Text(
               (lives - wrongLetters.length).toString(),
               style: TextStyle(
@@ -145,7 +147,10 @@ class _GameScreenStateful extends State<GameScreenStateful> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 50),
+            padding: const EdgeInsets.only(
+              top: 10,
+              bottom: 10,
+            ),
             child: Text(
               resultList.join(' '),
               style: TextStyle(
@@ -154,8 +159,9 @@ class _GameScreenStateful extends State<GameScreenStateful> {
               ),
             ),
           ),
+          hangmanImage(livesLeft),
           Padding(
-            padding: const EdgeInsets.only(top: 200, bottom: 50),
+            padding: const EdgeInsets.all(25),
             child: DropdownButton(
                 value: selectedValue,
                 items: [
@@ -271,6 +277,105 @@ class _GameScreenStateful extends State<GameScreenStateful> {
           HomeButton(),
         ]),
       ),
+    );
+  }
+
+  Widget hangmanImage(int livesLeft) {
+    switch (livesLeft) {
+      case 1:
+        return Image.asset(
+          'assets/part17.png',
+          height: 300,
+        );
+      case 2:
+        return Image.asset(
+          'assets/part16.png',
+          height: 300,
+        );
+      case 3:
+        return Image.asset(
+          'assets/part15.png',
+          height: 300,
+        );
+      case 4:
+        return Image.asset(
+          'assets/part14.png',
+          height: 300,
+        );
+      case 5:
+        return Image.asset(
+          'assets/part13.png',
+          height: 300,
+        );
+      case 6:
+        return Image.asset(
+          'assets/part12.png',
+          height: 300,
+        );
+      case 7:
+        return Image.asset(
+          'assets/part11.png',
+          height: 300,
+        );
+      case 8:
+        return Image.asset(
+          'assets/part10.png',
+          height: 300,
+        );
+      case 9:
+        return Image.asset(
+          'assets/part9.png',
+          height: 300,
+        );
+      case 10:
+        return Image.asset(
+          'assets/part8.png',
+          height: 300,
+        );
+      case 11:
+        return Image.asset(
+          'assets/part7.png',
+          height: 300,
+        );
+      case 12:
+        return Image.asset(
+          'assets/part6.png',
+          height: 300,
+        );
+      case 13:
+        return Image.asset(
+          'assets/part5.png',
+          height: 300,
+        );
+      case 14:
+        return Image.asset(
+          'assets/part4.png',
+          height: 300,
+        );
+      case 15:
+        return Image.asset(
+          'assets/part3.png',
+          height: 300,
+        );
+      case 16:
+        return Image.asset(
+          'assets/part2.png',
+          height: 300,
+        );
+      case 17:
+        return Image.asset(
+          'assets/part1.png',
+          height: 300,
+        );
+      case 18:
+        return SizedBox(
+          height: 300,
+        );
+      default:
+        print('tu cie mam');
+    }
+    return SizedBox(
+      height: 0,
     );
   }
 }
@@ -426,7 +531,6 @@ class ScreenLost extends StatelessWidget {
     var firstLetter = wordLostList.first.toString();
     wordLostList.removeAt(0);
     var restOfWord = wordLostList.join('').toString();
-    String imageName = 'assets/resized-depression-sad.gif';
 
     return Scaffold(
       appBar: AppBar(
@@ -460,10 +564,7 @@ class ScreenLost extends StatelessWidget {
             SizedBox(
               height: 50,
             ),
-            Image(
-              image: AssetImage(imageName),
-              width: 300,
-            ),
+            Image.asset('assets/resized-depression-sad.gif'),
             SizedBox(
               height: 50,
             ),
