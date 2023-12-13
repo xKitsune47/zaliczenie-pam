@@ -10,7 +10,7 @@ var concatenate = StringBuffer();
 var colorFirstLetter = Color.fromARGB(255, 254, 93, 38);
 var colorTextRestText = Colors.black;
 var weightOfFont = (FontWeight.bold);
-int lives = 20;
+int lives = 18;
 
 void main() {
   runApp(MyApp());
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
                     fontWeight: weightOfFont,
                   ))),
         ),
-        home: mainScreen(),
+        home: MainScreen(),
       ),
     );
   }
@@ -239,7 +239,7 @@ class _GameScreenStateful extends State<GameScreenStateful> {
                           Navigator.push(
                               context,
                               PageTransition(
-                                  child: screenLost(),
+                                  child: ScreenLost(),
                                   type: PageTransitionType.fade));
                         }
                       }
@@ -258,7 +258,7 @@ class _GameScreenStateful extends State<GameScreenStateful> {
                         Navigator.push(
                             context,
                             PageTransition(
-                                child: screenWon(),
+                                child: ScreenWon(),
                                 type: PageTransitionType.fade));
                       }
                     }
@@ -268,15 +268,15 @@ class _GameScreenStateful extends State<GameScreenStateful> {
                   });
                 }),
           ),
-          homeButton(),
+          HomeButton(),
         ]),
       ),
     );
   }
 }
 
-class mainScreen extends StatelessWidget {
-  const mainScreen({super.key});
+class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -332,7 +332,7 @@ class mainScreen extends StatelessWidget {
                         type: PageTransitionType.fade));
               },
             ),
-            howToPlayButton(),
+            HowToPlayButton(),
           ],
         ),
       ),
@@ -340,8 +340,8 @@ class mainScreen extends StatelessWidget {
   }
 }
 
-class howToPlayButton extends StatelessWidget {
-  const howToPlayButton({
+class HowToPlayButton extends StatelessWidget {
+  const HowToPlayButton({
     super.key,
   });
 
@@ -413,8 +413,8 @@ class howToPlayButton extends StatelessWidget {
   }
 }
 
-class screenLost extends StatelessWidget {
-  screenLost({super.key});
+class ScreenLost extends StatelessWidget {
+  ScreenLost({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -426,6 +426,7 @@ class screenLost extends StatelessWidget {
     var firstLetter = wordLostList.first.toString();
     wordLostList.removeAt(0);
     var restOfWord = wordLostList.join('').toString();
+    String imageName = 'assets/resized-depression-sad.gif';
 
     return Scaffold(
       appBar: AppBar(
@@ -457,10 +458,17 @@ class screenLost extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 350,
+              height: 50,
             ),
-            playAgainButton(appState: appState),
-            homeButton(),
+            Image(
+              image: AssetImage(imageName),
+              width: 300,
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            PlayAgainButton(appState: appState),
+            HomeButton(),
           ],
         ),
       ),
@@ -468,8 +476,8 @@ class screenLost extends StatelessWidget {
   }
 }
 
-class screenWon extends StatelessWidget {
-  screenWon({super.key});
+class ScreenWon extends StatelessWidget {
+  ScreenWon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -516,8 +524,8 @@ class screenWon extends StatelessWidget {
             SizedBox(
               height: 350,
             ),
-            playAgainButton(appState: appState),
-            homeButton(),
+            PlayAgainButton(appState: appState),
+            HomeButton(),
           ],
         ),
       ),
@@ -525,8 +533,8 @@ class screenWon extends StatelessWidget {
   }
 }
 
-class playAgainButton extends StatelessWidget {
-  const playAgainButton({
+class PlayAgainButton extends StatelessWidget {
+  const PlayAgainButton({
     super.key,
     required this.appState,
   });
@@ -551,8 +559,8 @@ class playAgainButton extends StatelessWidget {
   }
 }
 
-class homeButton extends StatelessWidget {
-  const homeButton({
+class HomeButton extends StatelessWidget {
+  const HomeButton({
     super.key,
   });
 
@@ -565,7 +573,7 @@ class homeButton extends StatelessWidget {
             Navigator.push(
                 context,
                 PageTransition(
-                    child: mainScreen(), type: PageTransitionType.fade));
+                    child: MainScreen(), type: PageTransitionType.fade));
           },
           child: Icon(Icons.home_outlined)),
     );
