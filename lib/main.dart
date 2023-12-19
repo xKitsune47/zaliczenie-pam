@@ -5,6 +5,7 @@ import 'package:english_words/english_words.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kumi_popup_window/kumi_popup_window.dart';
 
 //screen import
 import 'home_button.dart';
@@ -12,7 +13,6 @@ import 'how_to_play_button.dart';
 import 'play_again_button.dart';
 import 'screen_lost.dart';
 
-var concatenate = StringBuffer();
 var colorFirstLetter = Color.fromARGB(255, 254, 93, 38);
 var colorTextRestText = Colors.black;
 var weightOfFont = (FontWeight.bold);
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 254, 93, 38),
                   foregroundColor: Colors.black,
-                  //fixedSize: Size(150, 30),
+                  fixedSize: Size(150, 30),
                   textStyle: TextStyle(
                     fontWeight: weightOfFont,
                   ))),
@@ -88,6 +88,25 @@ class GameScreenStateful extends StatefulWidget {
 }
 
 class _GameScreenStateful extends State<GameScreenStateful> {
+  int? gamesWon;
+
+  loadGamesWon(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      gamesWon = prefs.getInt(key) ?? 0;
+    });
+  }
+
+  gamesWonAdd(String key, int value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(key, value);
+  }
+
+  saveScore(String key, int value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(key, value);
+  }
+
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
@@ -107,7 +126,7 @@ class _GameScreenStateful extends State<GameScreenStateful> {
         resultList.add(' _ ');
       }
     }
-
+    loadGamesWon('gamesWon');
     return Scaffold(
       body: Center(
         child: Column(children: [
@@ -263,10 +282,13 @@ class _GameScreenStateful extends State<GameScreenStateful> {
                         }
                       }
                       if (completionCheckList2.join('') == word) {
-                        int scoreGame = lives - wrongLetters.length;
+                        int scoreGame = (lives - wrongLetters.length);
                         if (scoreGame > appState.hiScores) {
                           appState.hiScores = scoreGame;
+                          saveScore('hiScore', scoreGame);
                         }
+                        loadGamesWon('gamesWon');
+                        gamesWonAdd('gamesWon', (gamesWon! + 1));
                         Navigator.push(
                             context,
                             PageTransition(
@@ -444,8 +466,159 @@ class MainScreen extends StatelessWidget {
               },
             ),
             HowToPlayButton(),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          child: Statistics(), type: PageTransitionType.fade));
+                },
+                child: const Icon(Icons.insert_chart_rounded))
           ],
         ),
+      ),
+    );
+  }
+}
+
+class Statistics extends StatefulWidget {
+  const Statistics({super.key});
+
+  @override
+  State<Statistics> createState() => _StatisticsState();
+}
+
+class _StatisticsState extends State<Statistics> {
+  int? gamesWon;
+  int? readScore;
+
+  loadGamesWon(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      gamesWon = prefs.getInt(key) ?? 0;
+    });
+  }
+
+  loadScore(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      readScore = prefs.getInt(key) ?? 0;
+    });
+  }
+
+  clearScore(String key, int value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(key, value);
+  }
+
+  clearGamesWon(String key, int value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(key, value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    loadGamesWon('gamesWon');
+    loadScore('hiScore');
+    return Scaffold(
+      body: Center(
+        child: Column(children: [
+          SizedBox(
+            height: 50,
+          ),
+          Text.rich(TextSpan(children: [
+            TextSpan(
+                text: 'S',
+                style: TextStyle(
+                  color: colorFirstLetter,
+                  fontWeight: weightOfFont,
+                  fontSize: 36,
+                )),
+            TextSpan(
+                text: 'tatystyki',
+                style: TextStyle(
+                  color: colorTextRestText,
+                  fontWeight: weightOfFont,
+                  fontSize: 36,
+                )),
+          ])),
+          SizedBox(
+            height: 100,
+          ),
+          Text('Wygrane gry:'),
+          Text(
+            (gamesWon ?? '0').toString(),
+            style: TextStyle(fontSize: 30),
+          ),
+          SizedBox(
+            height: 50,
+          ),
+          Text('Najwyższy wynik: '),
+          Text(
+            (readScore ?? 0).toString(),
+            style: TextStyle(fontSize: 30),
+          ),
+          SizedBox(
+            height: 150,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                onPressed: () {
+                  showPopupWindow(
+                    context,
+                    gravity: KumiPopupGravity.center,
+                    bgColor: Colors.grey.withOpacity(0.7),
+                    clickOutDismiss: true,
+                    clickBackDismiss: true,
+                    customAnimation: false,
+                    customPop: false,
+                    customPage: false,
+                    underStatusBar: false,
+                    underAppBar: true,
+                    offsetX: 0,
+                    offsetY: 0,
+                    duration: Duration(milliseconds: 200),
+                    childFun: (pop) {
+                      return Container(
+                        key: GlobalKey(),
+                        padding: EdgeInsets.all(10),
+                        height: 250,
+                        width: 200,
+                        color: Color.fromARGB(255, 254, 93, 38),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                  'Czy na pewno chcesz usunąć swoje statystyki?'),
+                              SizedBox(
+                                height: 80,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: ElevatedButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStatePropertyAll<Color>(
+                                                Colors.white)),
+                                    onPressed: () {
+                                      clearScore('hiScore', 0);
+                                      clearGamesWon('gamesWon', 0);
+                                    },
+                                    child: Icon(Icons.check_rounded)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: Icon(Icons.clear_rounded)),
+          ),
+          HomeButton(),
+        ]),
       ),
     );
   }
@@ -467,12 +640,7 @@ class _ScreenWonState extends State<ScreenWon> {
     loadScore('hiScore');
   }
 
-  void saveScore(String key, int value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt(key, value);
-  }
-
-  Future<void> loadScore(String key) async {
+  loadScore(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       readScore = prefs.getInt(key) ?? 0;
@@ -485,19 +653,11 @@ class _ScreenWonState extends State<ScreenWon> {
     List wordsWon = ['WYGRANA', 'ZWYCIĘSTWO', 'SUKCES'];
     int wordsWonInt = Random().nextInt(3);
     var wordWon = wordsWon[wordsWonInt];
-    var scoreEnd = lives - appState.wrongLetters.length;
+    var scoreEnd = (lives - appState.wrongLetters.length);
     List wordWonList = wordWon.split('');
     var firstLetter = wordWonList.first.toString();
     wordWonList.removeAt(0);
     var restOfWord = wordWonList.join('').toString();
-    try {
-      if (scoreEnd > readScore!) {
-        saveScore('hiScore', (lives - appState.wrongLetters.length));
-        print(scoreEnd);
-      }
-    } on TypeError {
-      print('typeerror');
-    }
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
